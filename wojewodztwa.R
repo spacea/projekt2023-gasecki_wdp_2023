@@ -13,12 +13,12 @@ library(sf)
 library(tmap)
 pliki/wojewodztwa.shp
 
+
 wojewodztwa <- st_read("Dane/wojewodztwa.shp")
 
 dane = meteo_imgw(interval = "monthly", rank = "synop", year = 2021, coords = TRUE)
 plot(dane$X, dane$Y)
 tm_shape("Woj/lubel.gpkg")
-
 
 
 getwd()

@@ -1,15 +1,19 @@
-install.packages("shiny")
 library("shiny")
 
 shinyUI(fluidPage(
   titlePanel("VoivodWeather"),
   sidebarLayout(
     sidebarPanel(
-      p("Input controls")
+      selectInput(inputId = "wybraneWoj", 
+                  label = "Wybierz województwo",
+                  choices = c("Dolnośląskie", "Mazowieckie", "Wielkopolskie"),
+                  selected = "Wielkopolskie"),
     ),
+    
     mainPanel(
-      br(),
-      p("Outputs")
+      textOutput("woj"),
+      textOutput("test"),
+      textOutput("testb")
     )
   )
 ))
