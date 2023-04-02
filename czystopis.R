@@ -9,6 +9,8 @@ library(sf)
 library(tmap)
 library(tidyverse)
 
+#obiekty uzywane przy wszelkich funkcjach
+#konkretne wojewodztwa, znajduja sie w dane.zip na github
 dol = st_read("Dane/dol.gpkg")
 kpom = st_read("Dane/kpom.gpkg")
 lodz = st_read("Dane/lodz.gpkg")
@@ -28,7 +30,16 @@ zpom = st_read("Dane/zpom.gpkg")
 pol = st_read("Dane/polska.gpkg")
 woj = data.frame() #zrobic ramke danych z wszystki jednostkami
 
+#argumenty
+#woj - wojewodztwo
+#year - rok
+#mon - miesiac
+#day - dzien
+#interval - rodzaj interwalu czasowego
+#rank - typ stacji
 
+
+#funkcja pobierająca miesieczne dane meteo z danego wojewodztwa i przedzialu czasowego dla danego rodzaju stacji
 dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   meteo_woj = meteo_imgw(interval = "monthly", rank = rank, year = year, coords = TRUE)
   if (!(is.numeric(c(year, mon)))) {
@@ -36,9 +47,9 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   } 
   meteo_mon = filter(meteo_woj, mm %in% mon)
   meteo_mon = meteo_mon[!is.na(meteo_mon$X) == TRUE,]
-  meteo_cord = st_as_sf(meteo_mon, coords = c("X", "Y"))
-  meteo_cords = st_set_crs(meteo_cord, 4326)
-  
+  meteo_cord = st_as_sf(meteo_mon, coords = c("X", "Y"))#tu tworzy sie obiekt klasy sf, czyli przestrzenny
+  meteo_cords = st_set_crs(meteo_cord, 4326)#wczesniej nadano mu koordy, tutaj uklad odniesienia
+  #w tej czesci sprawdza ktore z pobranych danych naleza do wybranego woj
   if (woj == "dol") {
     przyn = st_within(meteo_cords, dol)
     meteo_cords$woj = przyn
@@ -124,8 +135,9 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   }
 } 
 #trzeba jeszcze zrobic troche programowania defensywnego
-dane_pol = dane_woj_monthly("pol", 2022, rank = "synop")
+dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
 
+#podobnie jak wyzej z tym ze dane dzienne
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
   meteo_woj = meteo_imgw(interval = "daily", rank = rank, year = year, coords = TRUE, allow_failure = FALSE)
   if (!(is.numeric(c(year, mon, day)))) {
@@ -226,8 +238,9 @@ dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
 } 
 dane_pom2 = dane_woj_daily("pom", 2010:2011, 5, day = 1:7, rank = "synop")
 
+#funkcja, która uśrednia dane dla kazdej stacji, dane_woj to dane uzyskane za pomoca poprzedniej funkcji
 mean_woj = function(dane_woj, rank, interval) { 
-  if (rank == "synop") {
+  if (rank == "synop") {#ta funkcja usrednia najwazniejsze dane, jest duzo if-ow bo w zaleznosci od klasy stacji i przedzialu czasowego sa rozne dane w tych df
     if (interval == "daily") {
   mean_stacje = group_by(dane_woj, station) %>%
   summarise(mean_temp = mean(t2m_mean_daily, na.rm = T),
@@ -296,14 +309,41 @@ mean_woj = function(dane_woj, rank, interval) {
 
 dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
 
+#funkcja, która na interaktywnej mapie przedstawia stacje z danego wojewodztwa, dane_mean_woj to
+#dane uzyskane za pomoca funkcji mean_woj. Po klilknieciu w dana stacje pojawiaja sie informacje
+#o roznych rzeczach z wczesniej przetworzomnego okres
+#bede probowal to jescze polaczyc, zeby danymi wejsciowymi byl czas i wojewodztwo
 map_woj = function(woj, dane_mean_woj) {
+  tmap_mode("view")
   tm_shape(woj) + 
-    tm_borders()+
-    tm_graticules() + 
+    tm_borders()+  
     tm_shape(dane_mean_woj) + 
-    tm_symbols(col = "black", border.col = "white")+
-    tm_graticules()
+    tm_symbols(col = "blue", border.col = "white")+
+    tm_bubbles(
+      size = 2,
+      shape = 20,
+      scale = 5/3
+    )
 }
 
-map_woj(pol, dane_pol)
-
+#klimatogram dla danego wojewodztwa, w danym przedziale czasowym, dla wybranego rodzaju stacji
+klim_woj = function(woj, year, rank = "synop") {
+  klim_dane = dane_woj_monthly(woj = woj, year = year, rank = rank)
+  klim_sel = select(klim_dane, station:t2m_mean_mon, rr_monthly)
+  
+  mon_sum = klim_sel %>% 
+    group_by(mm) %>% 
+    summarise(tmax = mean(tmax_abs, na.rm = TRUE), 
+              tmin = mean(tmin_abs, na.rm = TRUE),
+              tavg = mean(t2m_mean_mon, na.rm = TRUE), 
+              prec = sum(rr_monthly) / n_distinct(yy))            
+  
+  mon_sum = dplyr::select(as.data.frame(mon_sum), -geometry)
+  mon_sum = round(mon_sum, 1)
+  mon_sum = as.data.frame(t(mon_sum[, c(5,2,3,4)]))
+  colnames(mon_sum) = month.abb
+  climatol::diagwl(mon_sum, mlab = "en", 
+                   est = woj, alt = NA, 
+                   per = "2022", p3line = FALSE)
+}
+klim_woj("zpom", 2000:2020)
