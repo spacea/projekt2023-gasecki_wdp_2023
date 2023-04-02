@@ -124,7 +124,7 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   }
 } 
 #trzeba jeszcze zrobic troche programowania defensywnego
-dane_pol = dane_woj_monthly("pol", 2022, rank = "synop")
+dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
 
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
   meteo_woj = meteo_imgw(interval = "daily", rank = rank, year = year, coords = TRUE, allow_failure = FALSE)
@@ -297,13 +297,35 @@ mean_woj = function(dane_woj, rank, interval) {
 dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
 
 map_woj = function(woj, dane_mean_woj) {
+  tmap_mode("view")
   tm_shape(woj) + 
-    tm_borders()+
-    tm_graticules() + 
+    tm_borders()+  
     tm_shape(dane_mean_woj) + 
-    tm_symbols(col = "black", border.col = "white")+
-    tm_graticules()
+    tm_symbols(col = "blue", border.col = "white")+
+    tm_bubbles(
+      size = 2,
+      shape = 20,
+      scale = 5/3
+    )
 }
 
-map_woj(pol, dane_pol)
+klim_woj = function(woj, year, rank = "synop") {
+  klim_dane = dane_woj_monthly(woj = woj, year = year, rank = rank)
+  klim_sel = select(klim_dane, station:t2m_mean_mon, rr_monthly)
+  
+  mon_sum = klim_sel %>% 
+    group_by(mm) %>% 
+    summarise(tmax = mean(tmax_abs, na.rm = TRUE), 
+              tmin = mean(tmin_abs, na.rm = TRUE),
+              tavg = mean(t2m_mean_mon, na.rm = TRUE), 
+              prec = sum(rr_monthly) / n_distinct(yy))            
+  
+  mon_sum = dplyr::select(as.data.frame(mon_sum), -geometry)
+  mon_sum = round(mon_sum, 1)
+  mon_sum = as.data.frame(t(mon_sum[, c(5,2,3,4)]))
+  colnames(mon_sum) = month.abb
+  climatol::diagwl(mon_sum, mlab = "en", 
+                   est = woj, alt = NA, 
+                   per = "2022", p3line = FALSE)
+}
 
