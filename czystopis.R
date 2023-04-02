@@ -8,6 +8,7 @@ library(broom)
 library(sf)
 library(tmap)
 library(tidyverse)
+library(climatol)
 
 #obiekty uzywane przy wszelkich funkcjach
 #konkretne wojewodztwa, znajduja sie w dane.zip na github
@@ -135,7 +136,7 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   }
 } 
 #trzeba jeszcze zrobic troche programowania defensywnego
-dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
+#dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
 
 #podobnie jak wyzej z tym ze dane dzienne
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
@@ -236,7 +237,7 @@ dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
     meteo_cords
   }
 } 
-dane_pom2 = dane_woj_daily("pom", 2010:2011, 5, day = 1:7, rank = "synop")
+#dane_pom2 = dane_woj_daily("pom", 2010:2011, 5, day = 1:7, rank = "synop")
 
 #funkcja, która uśrednia dane dla kazdej stacji, dane_woj to dane uzyskane za pomoca poprzedniej funkcji
 mean_woj = function(dane_woj, rank, interval) { 
@@ -307,11 +308,11 @@ mean_woj = function(dane_woj, rank, interval) {
   }
 }
 
-dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
+#dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
 
 #funkcja, która na interaktywnej mapie przedstawia stacje z danego wojewodztwa, dane_mean_woj to
 #dane uzyskane za pomoca funkcji mean_woj. Po klilknieciu w dana stacje pojawiaja sie informacje
-#o roznych rzeczach z wczesniej przetworzomnego okres
+#o roznych rzeczach z wczesniej przetworzomnego okresu
 #bede probowal to jescze polaczyc, zeby danymi wejsciowymi byl czas i wojewodztwo
 map_woj = function(woj, dane_mean_woj) {
   tmap_mode("view")
@@ -325,6 +326,7 @@ map_woj = function(woj, dane_mean_woj) {
       scale = 5/3
     )
 }
+#map_woj("zpom", dane_pol)
 
 #klimatogram dla danego wojewodztwa, w danym przedziale czasowym, dla wybranego rodzaju stacji
 klim_woj = function(woj, year, rank = "synop") {
@@ -345,5 +347,6 @@ klim_woj = function(woj, year, rank = "synop") {
   climatol::diagwl(mon_sum, mlab = "en", 
                    est = woj, alt = NA, 
                    per = "2022", p3line = FALSE)
-}
-klim_woj("zpom", 2000:2020)
+}  #Maciej: rok na klimatogramie się nie zmienia
+#klim_woj("zpom", 2000:2020)
+         

@@ -1,19 +1,27 @@
 library("shiny")
 
+woj
+
 shinyUI(fluidPage(
   titlePanel("VoivodWeather"),
   sidebarLayout(
     sidebarPanel(
-      selectInput(inputId = "wybraneWoj", 
-                  label = "Wybierz województwo",
-                  choices = c("Dolnośląskie", "Mazowieckie", "Wielkopolskie"),
-                  selected = "Wielkopolskie"),
+      h3("Klimatogram"),
+      selectInput(inputId = "woj", 
+                  label = "Województwo",
+                  choices = c("zpom", "kpom", "dol"),
+                  selected = "zpom"),
+      numericInput(inputId = "year",
+                  label = "Rok",
+                  value = 2022,
+                  min = 1960,
+                  max = 2022)
     ),
     
+    
     mainPanel(
-      textOutput("woj"),
-      textOutput("test"),
-      textOutput("testb")
+      textOutput("test"), 
+      plotOutput("klimatogram")
     )
   )
 ))

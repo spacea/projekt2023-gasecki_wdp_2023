@@ -1,3 +1,3 @@
-test = function() {
-  print("kupa")
+test = function(kupa) {
+  print(kupa)
 }
