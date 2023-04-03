@@ -28,9 +28,8 @@ warmaz = st_read("Dane/warmaz.gpkg")
 wiel = st_read("Dane/wiel.gpkg")
 zpom = st_read("Dane/zpom.gpkg")
 pol = st_read("Dane/polska.gpkg")
-woj = data.frame(
-  
-) #zrobic ramke danych z wszystkimi jednostkami
+woj_obj = data.frame(kpom, lodz, lubel, mal, maz, opol, podk, podl, pom, sla, swiet, 
+warmaz, wiel, zpom) #zrobic ramke danych z wszystkimi jednostkami
 
 #argumenty
 #woj - wojewodztwo
@@ -137,7 +136,7 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   }
 } 
 #trzeba jeszcze zrobic troche programowania defensywnego
-dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
+dane_pom = dane_woj_monthly("pom", 2022, rank = "precip")
 
 #podobnie jak wyzej z tym ze dane dzienne
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
@@ -309,14 +308,19 @@ mean_woj = function(dane_woj, rank, interval) {
   }
 }
 
-dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
+dane_pom = mean_woj(dane_pom, "precip", interval = "monthly")
 
 #funkcja, która na interaktywnej mapie przedstawia stacje z danego wojewodztwa, dane_mean_woj to
 #dane uzyskane za pomoca funkcji mean_woj. Po klilknieciu w dana stacje pojawiaja sie informacje
 #o roznych rzeczach z wczesniej przetworzomnego okres
 map_woj = function(woj, year, mon = 1:12, day = 1:31, rank = "synop") {
+  if (rank == "precip") {
+    dane = dane_woj_monthly(woj = woj, year = year, mon = mon, rank = rank)
+    dane_mean = mean_woj(dane, rank = "precip", interval = "monthly")
+  } else {
   dane = dane_woj_daily(woj = woj, year = year, day = day, rank = rank)
   dane_mean = mean_woj(dane, rank = rank, interval = "daily")
+  }
   tmap_mode("view")
   if (woj == "dol"){
     wojmap = dol
@@ -366,7 +370,7 @@ map_woj = function(woj, year, mon = 1:12, day = 1:31, rank = "synop") {
       scale = 5/3
     )
 }
-map_woj("dol", 1995:2022)
+map_woj("wiel", 2023, rank = "precip")
 
 #klimatogram dla danego wojewodztwa, w danym przedziale czasowym, dla wybranego rodzaju stacji
 klim_woj = function(woj, year, rank = "synop") {
