@@ -3,15 +3,13 @@ library(ggplot2)
 library(dplyr)
 library(rgdal)
 library(rgeos)
-library(tidyverse)
 library(broom)
 library(sf)
 library(tmap)
 library(tidyverse)
-library(climatol)
 
 #obiekty uzywane przy wszelkich funkcjach
-#konkretne wojewodztwa, znajduja sie w dane.zip na github
+#konkretne wojewodztwa, znajduja sie w Dane.zip na github
 dol = st_read("Dane/dol.gpkg")
 kpom = st_read("Dane/kpom.gpkg")
 lodz = st_read("Dane/lodz.gpkg")
@@ -29,7 +27,9 @@ warmaz = st_read("Dane/warmaz.gpkg")
 wiel = st_read("Dane/wiel.gpkg")
 zpom = st_read("Dane/zpom.gpkg")
 pol = st_read("Dane/polska.gpkg")
-woj = data.frame() #zrobic ramke danych z wszystki jednostkami
+#woj_obj = data.frame(dol, kpom, lodz, lubel, lubus, mal, maz, opol, podk, podl, 
+                     #pom, sla, swiet, warmaz, wiel, zpom, pol) 
+#zrobic ramke danych z wszystkimi jednostkami
 
 #argumenty
 #woj - wojewodztwo
@@ -136,7 +136,7 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   }
 } 
 #trzeba jeszcze zrobic troche programowania defensywnego
-#dane_dol = dane_woj_monthly("pol", 2022, rank = "synop")
+#dane_pom = dane_woj_monthly("pom", 2022, rank = "precip")
 
 #podobnie jak wyzej z tym ze dane dzienne
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
@@ -243,29 +243,29 @@ dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
 mean_woj = function(dane_woj, rank, interval) { 
   if (rank == "synop") {#ta funkcja usrednia najwazniejsze dane, jest duzo if-ow bo w zaleznosci od klasy stacji i przedzialu czasowego sa rozne dane w tych df
     if (interval == "daily") {
-  mean_stacje = group_by(dane_woj, station) %>%
-  summarise(mean_temp = mean(t2m_mean_daily, na.rm = T),
-            min_temp = min(tmin_daily, na.rm = T),
-            mean_temp_min = mean(tmin_daily, na.rm = T),
-            max_temp = max(tmax_daily, na.rm = T),
-            mean_temp_max = mean(tmax_daily, na.rm = T),
-            mean_rr = mean(rr_daily, na.rm = T),
-            mean_ins_h = mean(insolation_hours, na.rm = T),
-            mean_rain_h = mean(rain_hours, na.rm = T),
-            mean_snow_h = mean(snow_hours, na.rm = T),
-            mean_press = mean(press_mean_daily, na.rm = T))
+      mean_stacje = group_by(dane_woj, station) %>%
+        summarise(Średnia_temperatur = mean(t2m_mean_daily, na.rm = T),
+                  Minimalna_temperatura = min(tmin_daily, na.rm = T),
+                  Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
+                  Maksymalna_temperatura = max(tmax_daily, na.rm = T),
+                  Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
+                  Średnia_opadów = mean(rr_daily, na.rm = T),
+                  Średnia_godzin_słonecznych = mean(insolation_hours, na.rm = T),
+                  Średnia_godzin_deszczowych = mean(rain_hours, na.rm = T),
+                  Średnia_godzin_śnieżnych = mean(snow_hours, na.rm = T),
+                  Średnie_ciśnienie = mean(press_mean_daily, na.rm = T))
     } else if (interval == "monthly") {
       mean_stacje = group_by(dane_woj, station) %>%
-      summarise(mean_temp = mean(t2m_mean_mon, na.rm = T),
-            min_temp = min(tmin_abs, na.rm = T),
-            mean_temp_min = mean(tmin_mean, na.rm = T),
-            max_temp = max(tmax_abs, na.rm = T),
-            mean_temp_max = mean(tmax_mean, na.rm = T),
-            mean_rr = mean(rr_monthly, na.rm = T),
-            mean_ins_d = mean(insolation_monthly, na.rm = T),
-            mean_rain_d = mean(rain_days, na.rm = T),
-            mean_snow_d = mean(snow_days, na.rm = T),
-            mean_press = mean(press_mean_mon, na.rm = T))
+        summarise(Średnia_temperatur = mean(t2m_mean_mon, na.rm = T),
+                  Minimalna_temperatura = min(tmin_abs, na.rm = T),
+                  Średnia_minimalnych_miesięcznych_temperatur = mean(tmin_mean, na.rm = T),
+                  Maksymalna_temperatura = max(tmax_abs, na.rm = T),
+                  Średnia_maksymalnych_miesięcznych_temperatur = mean(tmax_mean, na.rm = T),
+                  Średnia_opadów = mean(rr_monthly, na.rm = T),
+                  Średnia_dni_słonecznych = mean(insolation_monthly, na.rm = T),
+                  Średnia_dni_deszczowych = mean(rain_days, na.rm = T),
+                  Średnia_dni_śnieżnych = mean(snow_days, na.rm = T),
+                  Średnie_ciśnienie = mean(press_mean_mon, na.rm = T))
     }else {
       stop("Podaj odpowiedni przedział czasowy:
            'daily' = dzienne
@@ -274,22 +274,22 @@ mean_woj = function(dane_woj, rank, interval) {
   } else if (rank == "climate") {
     if (interval == "daily") {
       mean_stacje = group_by(dane_woj, station) %>%
-        summarise(mean_temp = mean(t2m_mean_daily, na.rm = T),
-                  min_temp = min(tmin_daily, na.rm = T),
-                  mean_temp_min = mean(tmin_daily, na.rm = T),
-                  max_temp = max(tmax_daily, na.rm = T),
-                  mean_temp_max = mean(tmax_daily, na.rm = T),
-                  mean_rr = mean(rr_daily, na.rm = T))
+        summarise(Średnia_temperatur = mean(t2m_mean_daily, na.rm = T),
+                  Minimalna_temperatura = min(tmin_daily, na.rm = T),
+                  Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
+                  Maksymalna_temperatura = max(tmax_daily, na.rm = T),
+                  Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
+                  Średnia_opadów = mean(rr_daily, na.rm = T))
     } else if (interval == "monthly") {
       mean_stacje = group_by(dane_woj, station) %>%
-        summarise(mean_temp = mean(t2m_mean_mon, na.rm = T),
-                  min_temp = min(tmin_abs, na.rm = T),
-                  mean_temp_min = mean(tmin_mean, na.rm = T),
-                  max_temp = max(tmax_abs, na.rm = T),
-                  mean_temp_max = mean(tmax_mean, na.rm = T),
-                  mean_rr = mean(rr_monthly, na.rm = T),
-                  mean_rain_d = mean(rain_days, na.rm = T),
-                  mean_snow_d = mean(snow_days, na.rm = T))
+        summarise(Średnia_temperatur = mean(t2m_mean_mon, na.rm = T),
+                  Minimalna_temperatura = min(tmin_abs, na.rm = T),
+                  Średnia_minimalnych_miesięcznych_temperatur = mean(tmin_mean, na.rm = T),
+                  Maksymalna_temperatura = max(tmax_abs, na.rm = T),
+                  Średnia_maksymalnych_miesięcznych_temperatur = mean(tmax_mean, na.rm = T),
+                  Średnia_opadów = mean(rr_monthly, na.rm = T),
+                  Średnia_dni_deszczowych = mean(rain_days, na.rm = T),
+                  Średnia_dni_śnieżnych = mean(snow_days, na.rm = T))
     } else {
       stop("Podaj odpowiedni przedział czasowy:
            'daily' = dzienne
@@ -297,9 +297,9 @@ mean_woj = function(dane_woj, rank, interval) {
     }
   } else if (rank == "precip"){
     mean_stacje = group_by(dane_woj, station) %>%
-      summarise(mean_rr = mean(rr_monthly, na.rm = T),
-                mas_rr = max(rr_max, na.rm = T),
-                mean_snow_d = mean(snow_days, na.rm = T))
+      summarise(Średnia_opadów = mean(rr_monthly, na.rm = T),
+                Maksymalne_opady = max(rr_max, na.rm = T),
+                Średnia_dni_śnieżnych = mean(snow_days, na.rm = T))
   } else {
     stop("Podaj właściwy typ stacji:
          'synop' = synoptyczna
@@ -307,18 +307,61 @@ mean_woj = function(dane_woj, rank, interval) {
          'precip' = opadowa")
   }
 }
-
-#dane_pol = mean_woj(dane_pol, "synop", interval = "monthly")
+#dane_pom = mean_woj(dane_pom, "precip", interval = "monthly")
 
 #funkcja, która na interaktywnej mapie przedstawia stacje z danego wojewodztwa, dane_mean_woj to
 #dane uzyskane za pomoca funkcji mean_woj. Po klilknieciu w dana stacje pojawiaja sie informacje
-#o roznych rzeczach z wczesniej przetworzomnego okresu
-#bede probowal to jescze polaczyc, zeby danymi wejsciowymi byl czas i wojewodztwo
-map_woj = function(woj, dane_mean_woj) {
+#o roznych rzeczach z wczesniej przetworzomnego okres
+map_woj = function(woj, year, mon = 1:12, day = 1:31, rank = "synop") {
+  if (rank == "precip") {
+    dane = dane_woj_monthly(woj = woj, year = year, mon = mon, rank = rank)
+    dane_mean = mean_woj(dane, rank = "precip", interval = "monthly")
+  } else {
+  dane = dane_woj_daily(woj = woj, year = year, mon = mon, day = day, rank = rank)
+  dane_mean = mean_woj(dane, rank = rank, interval = "daily")
+  }
   tmap_mode("view")
-  tm_shape(woj) + 
+  if (woj == "dol"){
+    wojmap = dol
+  } else if (woj == "kpom") {
+    wojmap = kpom
+  } else if (woj == "kpom") {
+    wojmap = kpom
+  } else if (woj == "lodz") {
+    wojmap = lodz
+  } else if (woj == "lubel") {
+    wojmap = lubel
+  } else if (woj == "lubus") {
+    wojmap = lubus
+  } else if (woj == "mal") {
+    wojmap = mal
+  } else if (woj == "maz") {
+    wojmap = maz
+  } else if (woj == "opol") {
+    wojmap = opol
+  } else if (woj == "podk") {
+    wojmap = podk
+  } else if (woj == "podl") {
+    wojmap = podl
+  } else if (woj == "pom") {
+    wojmap = pom
+  } else if (woj == "sla") {
+    wojmap = sla
+  } else if (woj == "swiet") {
+    wojmap = swiet
+  } else if (woj == "warmaz") {
+    wojmap = warmaz
+  } else if (woj == "wiel") {
+    wojmap = wiel
+  } else if (woj == "zpom") {
+    wojmap = zpom
+  } else if (woj == "pol") {
+    wojmap = pol
+  }
+  
+  tm_shape(wojmap) + 
     tm_borders()+  
-    tm_shape(dane_mean_woj) + 
+    tm_shape(dane_mean) + 
     tm_symbols(col = "blue", border.col = "white")+
     tm_bubbles(
       size = 2,
@@ -326,7 +369,7 @@ map_woj = function(woj, dane_mean_woj) {
       scale = 5/3
     )
 }
-#map_woj("zpom", dane_pol)
+map_woj("wiel", 2023, rank = "precip")
 
 #klimatogram dla danego wojewodztwa, w danym przedziale czasowym, dla wybranego rodzaju stacji
 klim_woj = function(woj, year, rank = "synop") {
@@ -340,13 +383,51 @@ klim_woj = function(woj, year, rank = "synop") {
               tavg = mean(t2m_mean_mon, na.rm = TRUE), 
               prec = sum(rr_monthly) / n_distinct(yy))            
   
+  if (woj == "dol"){
+    title = "dolnośląskie"
+  } else if (woj == "kpom") {
+    title = "kujawsko-pomorskie"
+  } else if (woj == "lodz") {
+    title = "łódzkie"
+  } else if (woj == "lubel") {
+    title = "lubelskie"
+  } else if (woj == "lubus") {
+    title = "lubuskie"
+  } else if (woj == "mal") {
+    title = "małopolskie"
+  } else if (woj == "maz") {
+    title = "mazowieckie"
+  } else if (woj == "opol") {
+    title = "opolskie"
+  } else if (woj == "podk") {
+    title = "podkarpackie"
+  } else if (woj == "podl") {
+    title = "podlaskie"
+  } else if (woj == "pom") {
+    title = "pomorskie"
+  } else if (woj == "sla") {
+    title = "śląskie"
+  } else if (woj == "swiet") {
+    title = "świętokrzyskie"
+  } else if (woj == "warmaz") {
+    title = "warmińsko-mazurskie"
+  } else if (woj == "wiel") {
+    title = "wielkopolskie"
+  } else if (woj == "zpom") {
+    title = "zachodniopomorskie"
+  } else if (woj == "pol") {
+    title = "Polska"
+  }
+  
   mon_sum = dplyr::select(as.data.frame(mon_sum), -geometry)
   mon_sum = round(mon_sum, 1)
   mon_sum = as.data.frame(t(mon_sum[, c(5,2,3,4)]))
   colnames(mon_sum) = month.abb
   climatol::diagwl(mon_sum, mlab = "en", 
-                   est = woj, alt = NA, 
-                   per = "2022", p3line = FALSE)
-}  #Maciej: rok na klimatogramie się nie zmienia
-#klim_woj("zpom", 2000:2020)
-         
+                   est = title, alt = NA, 
+                   per = year , p3line = F)
+}
+#klim_woj("zpom", 2000)
+
+
+

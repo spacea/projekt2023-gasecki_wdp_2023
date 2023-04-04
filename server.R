@@ -1,8 +1,19 @@
-source("test.R")
 source("czystopis.R")
 
 shinyServer(function(input, output) {
-  output$test = renderText(test(input$kupa))
+  output$stacje = renderTmap({
+    input$sgen
+    isolate(map_woj(woj = input$swoj,
+                    year = input$syear,
+                    mon = input$smon,
+                    day = input$sday,
+                    rank = input$srank))
+  })
   
-  output$klimatogram = renderPlot(klim_woj(input$woj, input$year))
+  output$klimatogram = renderPlot({
+    input$gen
+    isolate(klim_woj(input$woj, 
+                     input$year,
+                     input$rank))
+  })
 })
