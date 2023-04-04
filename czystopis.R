@@ -8,8 +8,7 @@ library(sf)
 library(tmap)
 library(tidyverse)
 
-#obiekty uzywane przy wszelkich funkcjach
-#konkretne wojewodztwa, znajduja sie w Dane.zip na github
+# Obiekty używane przy wszelkich funkcjach.
 dol = st_read("Dane/dol.gpkg")
 kpom = st_read("Dane/kpom.gpkg")
 lodz = st_read("Dane/lodz.gpkg")
@@ -27,20 +26,18 @@ warmaz = st_read("Dane/warmaz.gpkg")
 wiel = st_read("Dane/wiel.gpkg")
 zpom = st_read("Dane/zpom.gpkg")
 pol = st_read("Dane/polska.gpkg")
-#woj_obj = data.frame(dol, kpom, lodz, lubel, lubus, mal, maz, opol, podk, podl, 
-                     #pom, sla, swiet, warmaz, wiel, zpom, pol) 
-#zrobic ramke danych z wszystkimi jednostkami
 
-#argumenty
-#woj - wojewodztwo
-#year - rok
-#mon - miesiac
-#day - dzien
-#interval - rodzaj interwalu czasowego
-#rank - typ stacji
+# argumenty
+# woj - wojewodztwo
+# year - rok
+# mon - miesiac
+# day - dzien
+# interval - rodzaj interwalu czasowego
+# rank - typ stacji
 
 
-#funkcja pobierająca miesieczne dane meteo z danego wojewodztwa i przedzialu czasowego dla danego rodzaju stacji
+# Funkcja pobierająca miesięczne dane meteo z danego województwa i przedziału 
+# czasowego dla danego rodzaju stacji.
 dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   meteo_woj = meteo_imgw(interval = "monthly", rank = rank, year = year, coords = TRUE)
   if (!(is.numeric(c(year, mon)))) {
@@ -135,10 +132,8 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
     meteo_cords
   }
 } 
-#trzeba jeszcze zrobic troche programowania defensywnego
-#dane_pom = dane_woj_monthly("pom", 2022, rank = "precip")
 
-#podobnie jak wyzej z tym ze dane dzienne
+# Podobnie jak wyżej, tylko dane dzienne.
 dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
   meteo_woj = meteo_imgw(interval = "daily", rank = rank, year = year, coords = TRUE, allow_failure = FALSE)
   if (!(is.numeric(c(year, mon, day)))) {
@@ -237,9 +232,9 @@ dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
     meteo_cords
   }
 } 
-#dane_pom2 = dane_woj_daily("pom", 2010:2011, 5, day = 1:7, rank = "synop")
 
-#funkcja, która uśrednia dane dla kazdej stacji, dane_woj to dane uzyskane za pomoca poprzedniej funkcji
+# Funkcja, która uśrednia dane dla każdej stacji, 
+# dane_woj to dane uzyskane za pomocą poprzedniej funkcji.
 mean_woj = function(dane_woj, rank, interval) { 
   if (rank == "synop") {#ta funkcja usrednia najwazniejsze dane, jest duzo if-ow bo w zaleznosci od klasy stacji i przedzialu czasowego sa rozne dane w tych df
     if (interval == "daily") {
@@ -307,11 +302,11 @@ mean_woj = function(dane_woj, rank, interval) {
          'precip' = opadowa")
   }
 }
-#dane_pom = mean_woj(dane_pom, "precip", interval = "monthly")
 
-#funkcja, która na interaktywnej mapie przedstawia stacje z danego wojewodztwa, dane_mean_woj to
-#dane uzyskane za pomoca funkcji mean_woj. Po klilknieciu w dana stacje pojawiaja sie informacje
-#o roznych rzeczach z wczesniej przetworzomnego okres
+# Funkcja, która na interaktywnej mapie przedstawia stacje z danego województwa, 
+# dane_mean_woj to dane uzyskane za pomoca funkcji mean_woj. 
+# Po klilknięciu w daną stację pojawiają sie informacje o rożnych danych z 
+# wcześniej przetworzomnych okresów.
 map_woj = function(woj, year, mon = 1:12, day = 1:31, rank = "synop") {
   if (rank == "precip") {
     dane = dane_woj_monthly(woj = woj, year = year, mon = mon, rank = rank)
@@ -369,9 +364,9 @@ map_woj = function(woj, year, mon = 1:12, day = 1:31, rank = "synop") {
       scale = 5/3
     )
 }
-map_woj("wiel", 2023, rank = "precip")
 
-#klimatogram dla danego wojewodztwa, w danym przedziale czasowym, dla wybranego rodzaju stacji
+# Klimatogram dla danego województwa, w danym przedziale czasowym, 
+# dla wybranego rodzaju stacji.
 klim_woj = function(woj, year, rank = "synop") {
   klim_dane = dane_woj_monthly(woj = woj, year = year, rank = rank)
   klim_sel = select(klim_dane, station:t2m_mean_mon, rr_monthly)
@@ -427,7 +422,6 @@ klim_woj = function(woj, year, rank = "synop") {
                    est = title, alt = NA, 
                    per = year , p3line = F)
 }
-#klim_woj("zpom", 2000)
 
 
 

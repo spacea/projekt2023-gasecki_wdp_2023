@@ -1,6 +1,7 @@
-library("shiny")
-library("tmap")
+library(shiny)
+library(tmap)
 
+# Listy nazwanych argumentów, które są wyświetlane w kontrolkach input.
 woj_list = list("dol", "kpom", "lodz", "lubel", "lubus", "mal", "maz", "opol", 
                 "podk", "podl", "pom", "sla", "swiet", "warmaz", "wiel", "zpom", 
                 "pol")
@@ -12,6 +13,7 @@ names(woj_list) = c("dolnośląskie", "kujawsko-pomorskie", "łódzkie",
 rank_list = list("synop", "climate", "precip")
 names(rank_list) = c("synoptyczne", "klimatyczne", "opadowe")
 
+# Interfejs Shiny zawierający podstawowy layout strony i kontrolki input.
 shinyUI(fluidPage(
   titlePanel("VoivodWeather"),
   
