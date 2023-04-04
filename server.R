@@ -1,4 +1,4 @@
-source("czystopis.R")
+source("voivodweather.R")
 
 # Podstawowa funkcja pakietu Shiny.
 # Zawiera funkcje renderujące mapę stacji i klimatogram w interfejsie.
