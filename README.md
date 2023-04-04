@@ -2,8 +2,27 @@ VoivodWeather
 
   Autorzy: Kacper Gąsecki, Maciej Rosada, Mateusz Ren
 
-Aplikacja pozwalająca użytkownikowi na generowanie map pogodowych i klimatogramów dla polskich województw oraz wyszukiwanie stacji meteorologicznych według podanych kryteriów, na podstawie oficjalnych danych. 
+Aplikacja ta pozwala użytkownikowi na generowanie interaktywnych map Polski i województw z zaznaczonymi nań stacjami meteorologicznymi. Kliknięcie w daną stację ujawnia pobrane z imgw dane meteorolgiczne zarejestrowane przez daną stację w podanym przedziale czasowym. Umożliwia też generowanie klimatogramów dla Polski i województw zgodnie z podanymi kryteriami czasowymi.
 
-test
-
+Instrukcja
+  1. Zaczynamy od pobrania i rozpakowania całej zawartości brancha main.
+  2. Następnie najlepiej otworzyć voivodweather.R w RStudio by upewnić się czy mamy zainstalowane wszystkie potrzebne pakiety. Jeżeli nie to RStudio powinno zasgurować      zainstalowanie ich i tak też należy postąpić. 
+  3. Po zainstalowaniu pakietów przychodzi pora na otworzenie ui.R, w którym możemy być dodatkowo poinformowani o konieczności zainstalowania pakietu Shiny. Jeżeli nie      jest zainstalowany to jak najbardziej należy go zainstalować.
+  4. Gdy już mamy pakiet Shiny, to możemy uruchomić aplikację poprzez otworzenie ui.R lub server.R i kliknięcie w "RunApp" w prawym górnym rogu okienka skryptu.
+  5. Pokaże się okienko aplikacji, przy którym należy poczekać z wykonywaniem jakichkolwiek akcji, aż do pojawienia się mapy stacji wygenerowanej na 
+     podstawie domyślnych danych.
+  6. Gdy aplikacja jest już w pełni załadowana możemy zmieniać wartości kontrolek w lewym panelu, na podstawie których będzimy generować mapy. W celu 
+     zatwierdzenia wybranych kryteriów należy kliknąć przycisk "Generuj" i chwilę odczekać. 
+  -----------------------------------------------------------------------------------------------------------------------------------------------------------
+  UWAGA! Może się zdarzyć, że będzie brakowało danych dla konkretnego zestawu kryteriów, co spowoduje błąd. Błąd ten jednakże nie zatrzymuje aplikacji, można 
+  więc zmienić kryteria i spróbowac ponownie.
+  -----------------------------------------------------------------------------------------------------------------------------------------------------------
+  7. Te same czynności możemy wykonywać dla gneratora klimatogramów dostępnego w osobnej zakładce.
+  
+Zawartość folderu
+  Dane - folder zawierający pliki geopackage, które są używane przez progam do wydzielania odpowiednich dla stacji województw.
+  projekt2023-gasecki_wdp_2023.Rproj - plik projektu RStudio.
+  server.R - skrypt R przetwarzający zasady zachowywania się interfejsu Shiny z pliku ui.R.
+  ui.R - skrypt R zawierający wygląd aplikacji stworzoną przy użyciu pakietu Shiny
+  
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-8d59dc4de5201274e310e4c54b9627a8934c3b88527886e3b421487c677d23eb.svg)](https://classroom.github.com/a/tauthlex)
