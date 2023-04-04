@@ -23,6 +23,21 @@ Zawartość folderu
   Dane - folder zawierający pliki geopackage, które są używane przez progam do wydzielania odpowiednich dla stacji województw.
   projekt2023-gasecki_wdp_2023.Rproj - plik projektu RStudio.
   server.R - skrypt R przetwarzający zasady zachowywania się interfejsu Shiny z pliku ui.R.
-  ui.R - skrypt R zawierający wygląd aplikacji stworzoną przy użyciu pakietu Shiny
+  ui.R - skrypt R zawierający wygląd aplikacji stworzoną przy użyciu pakietu Shiny.
+  voivodweather.R - skrypt główny zawirający wszystkie najważniejsze funkcje pobierające dane, przetwarzające je i tworzące z nich mapy i wykresy.
+  
+Wykorzystane pakiety:
+  climate
+  ggplot2
+  dplyr
+  rgdal
+  rgeos
+  broom
+  sf
+  tmap
+  tidyverse
+  shiny
+  
+Poszczególne funckje i elementy kodu opisane są w komentarzach.
   
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-8d59dc4de5201274e310e4c54b9627a8934c3b88527886e3b421487c677d23eb.svg)](https://classroom.github.com/a/tauthlex)
