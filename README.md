@@ -27,15 +27,15 @@ Zawartość folderu
   voivodweather.R - skrypt główny zawirający wszystkie najważniejsze funkcje pobierające dane, przetwarzające je i tworzące z nich mapy i wykresy.
   
 Wykorzystane pakiety:
-  climate
-  ggplot2
-  dplyr
-  rgdal
-  rgeos
-  broom
-  sf
-  tmap
-  tidyverse
+  climate,
+  ggplot2,
+  dplyr,
+  rgdal,
+  rgeos,
+  broom,
+  sf,
+  tmap,
+  tidyverse,
   shiny
   
 Poszczególne funckje i elementy kodu opisane są w komentarzach.
