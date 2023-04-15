@@ -8,6 +8,21 @@ Aplikacja ta pozwala użytkownikowi na generowanie interaktywnych map Polski i w
 
 ### Instrukcja uruchomienia bez pobierania repozytorium
 
+#### Instalacja
+
+```r
+install.packages(c("climate", "ggplot2", "dplyr", "rgdal", "rgeos", 
+                   "broom", "sf", "tmap", "shiny"))
+```
+
+#### Uruchamianie
+
+```r
+library(shiny)
+runGitHub("projekt2023-gasecki_wdp_2023", "spacea")
+```
+
+
 ### Instrukcja z pobieraniem repozytorium
   1. Zaczynamy od pobrania i rozpakowania całej zawartości brancha main.
   2. Następnie najlepiej otworzyć voivodweather.R w RStudio by upewnić się czy mamy zainstalowane wszystkie potrzebne pakiety. Jeżeli nie to RStudio powinno zasgurować      zainstalowanie ich i tak też należy postąpić. 
