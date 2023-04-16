@@ -11,8 +11,10 @@ Aplikacja ta pozwala użytkownikowi na generowanie interaktywnych map Polski i w
 #### Instalacja
 
 ```r
-install.packages(c("climate", "ggplot2", "dplyr", "rgdal", "rgeos", 
+install.packages(c("ggplot2", "dplyr", "rgdal", "rgeos", 
                    "broom", "sf", "tmap", "shiny", "tidyverse"))
+library(remotes)
+install_github("bczernecki/climate")
 ```
 
 #### Uruchamianie
