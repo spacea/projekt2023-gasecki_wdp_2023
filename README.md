@@ -12,7 +12,7 @@ Aplikacja ta pozwala użytkownikowi na generowanie interaktywnych map Polski i w
 
 ```r
 install.packages(c("ggplot2", "dplyr", "rgdal", "rgeos", 
-                   "broom", "sf", "tmap", "shiny", "tidyverse"))
+                   "broom", "sf", "tmap", "shiny"))
 library(remotes)
 install_github("bczernecki/climate")
 ```
@@ -55,7 +55,6 @@ runGitHub("projekt2023-gasecki_wdp_2023", "spacea")
   * `broom`
   * `sf`
   * `tmap`
-  * `tidyverse`
   * `shiny`
   
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-8d59dc4de5201274e310e4c54b9627a8934c3b88527886e3b421487c677d23eb.svg)](https://classroom.github.com/a/tauthlex)
