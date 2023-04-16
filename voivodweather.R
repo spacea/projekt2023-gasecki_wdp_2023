@@ -6,9 +6,8 @@ library(rgeos)
 library(broom)
 library(sf)
 library(tmap)
-library(tidyverse)
 
-# Obiekty używane przy wszelkich funkcjach.
+
 dol = st_read("Dane/dol.gpkg")
 kpom = st_read("Dane/kpom.gpkg")
 lodz = st_read("Dane/lodz.gpkg")
@@ -28,11 +27,11 @@ zpom = st_read("Dane/zpom.gpkg")
 pol = st_read("Dane/polska.gpkg")
 
 # argumenty
-# woj - wojewodztwo
+# woj - województwo
 # year - rok
-# mon - miesiac
-# day - dzien
-# interval - rodzaj interwalu czasowego
+# mon - miesiąc
+# day - dzień
+# interval - rodzaj interwału czasowego
 # rank - typ stacji
 
 
@@ -45,9 +44,9 @@ dane_woj_monthly = function (woj, year, mon = 1:12, rank = "synop") {
   } 
   meteo_mon = filter(meteo_woj, mm %in% mon)
   meteo_mon = meteo_mon[!is.na(meteo_mon$X) == TRUE,]
-  meteo_cord = st_as_sf(meteo_mon, coords = c("X", "Y"))#tu tworzy sie obiekt klasy sf, czyli przestrzenny
-  meteo_cords = st_set_crs(meteo_cord, 4326)#wczesniej nadano mu koordy, tutaj uklad odniesienia
-  #w tej czesci sprawdza ktore z pobranych danych naleza do wybranego woj
+  meteo_cord = st_as_sf(meteo_mon, coords = c("X", "Y"))# Tu tworzy sie obiekt klasy sf, czyli przestrzenny
+  meteo_cords = st_set_crs(meteo_cord, 4326)# Wcześniej nadano mu koordynaty, tutaj układ odniesienia
+  # W tej cześci sprawdza, które z pobranych danych należa do wybranego woj
   if (woj == "dol") {
     przyn = st_within(meteo_cords, dol)
     meteo_cords$woj = przyn
@@ -236,55 +235,51 @@ dane_woj_daily = function (woj, year, mon = 1:12, day = 1:31, rank = "synop") {
 # Funkcja, która uśrednia dane dla każdej stacji, 
 # dane_woj to dane uzyskane za pomocą poprzedniej funkcji.
 mean_woj = function(dane_woj, rank, interval) { 
-  if (rank == "synop") {#ta funkcja usrednia najwazniejsze dane, jest duzo if-ow bo w zaleznosci od klasy stacji i przedzialu czasowego sa rozne dane w tych df
+  if (rank == "synop") {# Ta funkcja uśrednia najważniejsze dane, jest dużo if-ów bo w zależności od klasy stacji i przedzialu czasowego sa rożne dane w tych df
     if (interval == "daily") {
-      mean_stacje = group_by(dane_woj, station) %>%
-        summarise(Średnia_temperatur = mean(t2m_mean_daily, na.rm = T),
-                  Minimalna_temperatura = min(tmin_daily, na.rm = T),
-                  Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
-                  Maksymalna_temperatura = max(tmax_daily, na.rm = T),
-                  Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
-                  Średnia_opadów = mean(rr_daily, na.rm = T),
-                  Średnia_godzin_słonecznych = mean(insolation_hours, na.rm = T),
-                  Średnia_godzin_deszczowych = mean(rain_hours, na.rm = T),
-                  Średnia_godzin_śnieżnych = mean(snow_hours, na.rm = T),
-                  Średnie_ciśnienie = mean(press_mean_daily, na.rm = T))
+  mean_stacje = group_by(dane_woj, station) %>%
+  summarise(Średnia_dzienna_temperatur = mean(t2m_mean_daily, na.rm = T),
+            Minimalna_temperatura_dzienna = min(tmin_daily, na.rm = T),
+            Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
+            Maksymalna_temperatura_dzienna = max(tmax_daily, na.rm = T),
+            Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
+            Średnia_dziennych_opadów = mean(rr_daily, na.rm = T),
+            Średnia_godzin_słonecznych_w_ciagu_dnia = mean(insolation_hours, na.rm = T),
+            Średnia_godzin_deszczowych_w_ciagu_dnia = mean(rain_hours, na.rm = T),
+            Średnia_godzin_śnieżnych_w_ciagu_dnia = mean(snow_hours, na.rm = T),
+            Średnie_dzienne_ciśnienie = mean(press_mean_daily, na.rm = T))
     } else if (interval == "monthly") {
       mean_stacje = group_by(dane_woj, station) %>%
-        summarise(Średnia_temperatur = mean(t2m_mean_mon, na.rm = T),
-                  Minimalna_temperatura = min(tmin_abs, na.rm = T),
-                  Średnia_minimalnych_miesięcznych_temperatur = mean(tmin_mean, na.rm = T),
-                  Maksymalna_temperatura = max(tmax_abs, na.rm = T),
-                  Średnia_maksymalnych_miesięcznych_temperatur = mean(tmax_mean, na.rm = T),
-                  Średnia_opadów = mean(rr_monthly, na.rm = T),
-                  Średnia_dni_słonecznych = mean(insolation_monthly, na.rm = T),
-                  Średnia_dni_deszczowych = mean(rain_days, na.rm = T),
-                  Średnia_dni_śnieżnych = mean(snow_days, na.rm = T),
-                  Średnie_ciśnienie = mean(press_mean_mon, na.rm = T))
-    }else {
-      stop("Podaj odpowiedni przedział czasowy:
-           'daily' = dzienne
-           'monthly' = miesięczne")
+      summarise(Średnia_temperatur_miesiecznych = mean(t2m_mean_mon, na.rm = T),
+            Minimalna_temperatura_dzienna = min(tmin_abs, na.rm = T),
+            Średnia_minimalnych_dziennych_temperatur = mean(tmin_mean, na.rm = T),
+            Maksymalna_temperatura_dzienna = max(tmax_abs, na.rm = T),
+            Średnia_maksymalnych_dziennych_temperatur = mean(tmax_mean, na.rm = T),
+            Średnia_opadów_miesiecznych = mean(rr_monthly, na.rm = T),
+            Średnia_dni_słonecznych_w_miesiacu = mean(insolation_monthly, na.rm = T),
+            Średnia_dni_deszczowych_w_miesiacu = mean(rain_days, na.rm = T),
+            Średnia_dni_śnieżnych_w_miesiacu = mean(snow_days, na.rm = T),
+            Średnie_ciśnienie_w_miesiacu = mean(press_mean_mon, na.rm = T))
     }
   } else if (rank == "climate") {
     if (interval == "daily") {
       mean_stacje = group_by(dane_woj, station) %>%
-        summarise(Średnia_temperatur = mean(t2m_mean_daily, na.rm = T),
-                  Minimalna_temperatura = min(tmin_daily, na.rm = T),
-                  Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
-                  Maksymalna_temperatura = max(tmax_daily, na.rm = T),
-                  Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
-                  Średnia_opadów = mean(rr_daily, na.rm = T))
+           summarise(Średnia_dziennych_temperatur = mean(t2m_mean_daily, na.rm = T),
+           Minimalna_dzienna_temperatura = min(tmin_daily, na.rm = T),
+           Średnia_minimalnych_dziennych_temperatur = mean(tmin_daily, na.rm = T),
+           Maksymalna_dziennych_temperatura = max(tmax_daily, na.rm = T),
+           Średnia_maksymalnych_dziennych_temperatur = mean(tmax_daily, na.rm = T),
+           Średnia_dziennych_opadów = mean(rr_daily, na.rm = T))
     } else if (interval == "monthly") {
       mean_stacje = group_by(dane_woj, station) %>%
-        summarise(Średnia_temperatur = mean(t2m_mean_mon, na.rm = T),
-                  Minimalna_temperatura = min(tmin_abs, na.rm = T),
+        summarise(Średnia_miesiecznych_temperatur = mean(t2m_mean_mon, na.rm = T),
+                  Minimalna_dzienna_temperatura = min(tmin_abs, na.rm = T),
                   Średnia_minimalnych_miesięcznych_temperatur = mean(tmin_mean, na.rm = T),
-                  Maksymalna_temperatura = max(tmax_abs, na.rm = T),
+                  Maksymalna_dzienna_temperatura = max(tmax_abs, na.rm = T),
                   Średnia_maksymalnych_miesięcznych_temperatur = mean(tmax_mean, na.rm = T),
-                  Średnia_opadów = mean(rr_monthly, na.rm = T),
-                  Średnia_dni_deszczowych = mean(rain_days, na.rm = T),
-                  Średnia_dni_śnieżnych = mean(snow_days, na.rm = T))
+                  Średnia_miesiecznych_opadów = mean(rr_monthly, na.rm = T),
+                  Średnia_dni_deszczowych_w_miesiacu = mean(rain_days, na.rm = T),
+                  Średnia_dni_śnieżnych_w_miesiacu = mean(snow_days, na.rm = T))
     } else {
       stop("Podaj odpowiedni przedział czasowy:
            'daily' = dzienne
@@ -292,9 +287,9 @@ mean_woj = function(dane_woj, rank, interval) {
     }
   } else if (rank == "precip"){
     mean_stacje = group_by(dane_woj, station) %>%
-      summarise(Średnia_opadów = mean(rr_monthly, na.rm = T),
-                Maksymalne_opady = max(rr_max, na.rm = T),
-                Średnia_dni_śnieżnych = mean(snow_days, na.rm = T))
+      summarise(Średnia_miesiecznych_opadów = mean(rr_monthly, na.rm = T),
+                Maksymalne_dzienne_opady = max(rr_max, na.rm = T),
+                Średnia_dni_śnieżnych_w_miesiacu = mean(snow_days, na.rm = T))
   } else {
     stop("Podaj właściwy typ stacji:
          'synop' = synoptyczna
