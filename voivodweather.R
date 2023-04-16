@@ -7,7 +7,6 @@ library(broom)
 library(sf)
 library(tmap)
 
-
 dol = st_read("Dane/dol.gpkg")
 kpom = st_read("Dane/kpom.gpkg")
 lodz = st_read("Dane/lodz.gpkg")
@@ -33,7 +32,6 @@ pol = st_read("Dane/polska.gpkg")
 # day - dzień
 # interval - rodzaj interwału czasowego
 # rank - typ stacji
-
 
 # Funkcja pobierająca miesięczne dane meteo z danego województwa i przedziału 
 # czasowego dla danego rodzaju stacji.
